@@ -21,7 +21,7 @@
         <ul>
             <li><a href="login.jsp">Iniciar Sesión</a></li>
             <li><a href="register.jsp">Registrarse</a></li>
-            <li><a href="recetas.jsp">Ver Recetas</a></li>
+    
         </ul>
     </nav>
 

@@ -9,13 +9,27 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConexionBD {
-    // Configura tus valores según tu entorno
     private static final String URL = "jdbc:mysql://localhost:3306/apprecetas";
     private static final String USUARIO = "root";
-    private static final String CONTRASENA = ""; // cambia si tu MySQL tiene clave
+    private static final String CONTRASENA = ""; // O tu contraseña real
 
-    public static Connection obtenerConexion() throws SQLException, ClassNotFoundException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        return DriverManager.getConnection(URL, USUARIO, CONTRASENA);
+    public static Connection obtenerConexion() {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            return DriverManager.getConnection(URL, USUARIO, CONTRASENA);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
+    public static void main(String[] args) {
+        Connection con = obtenerConexion();
+        if (con != null) {
+            System.out.println("✅ ¡Conexión a MySQL exitosa!");
+        } else {
+            System.out.println("❌ No se pudo conectar a la base de datos.");
+        }
+    }
+   
+
 }

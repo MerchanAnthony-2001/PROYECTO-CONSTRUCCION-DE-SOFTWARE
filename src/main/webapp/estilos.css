@@ -1,0 +1,129 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 23 jun 2025, 8:02:00 p. m.
+    Author     : CodeAngel369
+*/
+
+/* Fuentes, fondo y colores cálidos */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fff8f0;
+    color: #4e342e;
+    margin: 0;
+    padding: 0;
+}
+
+/* Encabezado atractivo y cálido */
+header {
+    background-color: #d84315; /* tono terracota */
+    color: #fff;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2em;
+    letter-spacing: 1px;
+}
+
+/* Área principal centrada */
+main {
+    padding: 30px;
+    max-width: 900px;
+    margin: auto;
+    background-color: #fffefc;
+}
+
+/* Estilo para formularios */
+form {
+    background-color: #fffaf0;
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #e0c4a2;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* Inputs con diseño moderno */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+    background-color: #fffaf5;
+    transition: 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+textarea:focus {
+    border-color: #d84315;
+    outline: none;
+    background-color: #fff;
+}
+
+/* Botones con efecto */
+input[type="submit"], .boton {
+    background-color: #ff7043;
+    color: white;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover, .boton:hover {
+    background-color: #e64a19;
+}
+
+/* Tarjetas de recetas */
+.receta-card {
+    background-color: #fff;
+    border: 1px solid #f0e0d6;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+.receta-card h2 {
+    color: #bf360c;
+    margin-top: 0;
+}
+
+.receta-card p {
+    margin: 8px 0;
+}
+
+/* Enlaces */
+a {
+    color: #d84315;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Pie de página */
+footer {
+    background-color: #f5f5f5;
+    text-align: center;
+    padding: 20px;
+    color: #888;
+    margin-top: 40px;
+    font-size: 0.9em;
+    border-top: 1px solid #e0e0e0;
+}

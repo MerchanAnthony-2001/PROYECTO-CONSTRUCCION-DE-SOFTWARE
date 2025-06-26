@@ -7,12 +7,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="modelo.Receta" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html>
 <head>
     <title>Recetas Compartidas - AppRecetas</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="estilos.css"> <!-- Opcional -->
+    <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
     <header>
@@ -20,10 +21,17 @@
     </header>
 
     <main>
-        <c:if test="${empty listaRecetas}">
-            <p>No hay recetas publicadas aún.</p>
+        <!-- Mostrar cuántas recetas se encontraron -->
+        <c:if test="${not empty listaRecetas}">
+            <p><strong>Total de recetas encontradas:</strong> ${fn:length(listaRecetas)}</p>
         </c:if>
 
+        <!-- Mostrar mensaje si no hay recetas -->
+        <c:if test="${empty listaRecetas}">
+            <p style="color:gray;">No hay recetas publicadas aún.</p>
+        </c:if>
+
+        <!-- Listado de recetas -->
         <c:forEach var="receta" items="${listaRecetas}">
             <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 15px;">
                 <h2>${receta.titulo}</h2>

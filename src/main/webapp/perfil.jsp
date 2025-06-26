@@ -37,7 +37,7 @@
         </ul>
 
         <p><a href="publicar.jsp">➕ Publicar nueva receta</a></p>
-        <p><a href="recetas.jsp">📖 Ver recetas de otros usuarios</a></p>
+        <p><a href="VerRecetasServlet">📖 Ver recetas de otros usuarios</a></p>
         <p><a href="LogoutServlet">🚪 Cerrar sesión</a></p>
     </main>
 
