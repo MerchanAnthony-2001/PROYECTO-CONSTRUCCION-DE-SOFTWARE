@@ -49,7 +49,9 @@ public class LoginServlet extends HttpServlet {
                 );
 
                 request.getSession().setAttribute("usuario", usuario);
+                request.getSession().setAttribute("usuarioId", usuario.getId()); 
                 response.sendRedirect("perfil.jsp");
+                
             } else {
                 response.sendRedirect("login.jsp?error=1");
             }

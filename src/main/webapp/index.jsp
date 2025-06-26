@@ -9,7 +9,7 @@
 <head>
     <title>AppRecetas - Inicio</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="estilos.css"> <!-- Si luego usas CSS -->
+    <link rel="stylesheet" href="estilos.css"> 
 </head>
 <body>
     <header>
