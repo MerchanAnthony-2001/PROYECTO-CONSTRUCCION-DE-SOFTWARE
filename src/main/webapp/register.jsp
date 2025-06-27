@@ -10,7 +10,7 @@
 <head>
     <title>Registrarse - AppRecetas</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="estilos.css"> <!-- Opcional, si tienes CSS -->
+    <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
     <header>

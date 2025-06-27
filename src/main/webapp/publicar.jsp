@@ -21,11 +21,11 @@
 <head>
     <title>Publicar Receta - AppRecetas</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="estilos.css"> <!-- Opcional -->
+    <link rel="stylesheet" href="estilos.css"> 
 </head>
 <body>
     <header>
-        <h1>📤 Publicar nueva receta</h1>
+        <h1> Publicar nueva receta</h1>
     </header>
 
     <main>

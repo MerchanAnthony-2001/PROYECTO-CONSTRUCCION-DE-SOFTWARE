@@ -22,7 +22,7 @@
 <head>
     <title>Mi Perfil - AppRecetas</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="estilos.css"> <!-- Si usas CSS -->
+    <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
     <header>
@@ -36,9 +36,12 @@
             <li><strong>Correo:</strong> <%= usuario.getCorreo() %></li>
         </ul>
 
-        <p><a href="publicar.jsp">➕ Publicar nueva receta</a></p>
-        <p><a href="VerRecetasServlet">📖 Ver recetas de otros usuarios</a></p>
-        <p><a href="LogoutServlet">🚪 Cerrar sesión</a></p>
+        <div class="perfil-acciones">
+    <a href="publicar.jsp" class="btn-accion">➕ Publicar nueva receta</a>
+    <a href="VerRecetasServlet" class="btn-accion">📖 Ver recetas de otros usuarios</a>
+    <a href="LogoutServlet" class="btn-accion logout">🚪 Cerrar sesión</a>
+        </div>
+
     </main>
 
     <footer>
