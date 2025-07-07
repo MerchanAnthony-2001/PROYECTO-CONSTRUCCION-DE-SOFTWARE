@@ -4,22 +4,15 @@
  */
 package controlador;
 
+import org.mindrot.jbcrypt.BCrypt;
 import java.io.IOException;
+import java.sql.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import jakarta.servlet.http.*;
 import modelo.Usuario;
+import config.ConexionBD;
 
-/**
- *
- * @author CodeAngel369
- */
 @WebServlet(name = "LoginServlet", urlPatterns = {"/LoginServlet"})
 public class LoginServlet extends HttpServlet {
 
@@ -29,40 +22,57 @@ public class LoginServlet extends HttpServlet {
         String correo = request.getParameter("correo");
         String contrasena = request.getParameter("contrasena");
 
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/apprecetas", "root", "");
+        if (correo == null || contrasena == null ||
+            correo.trim().isEmpty() || contrasena.trim().isEmpty()) {
+            response.sendRedirect("login.jsp?error=campos_vacios");
+            return;
+        }
 
-            String sql = "SELECT * FROM usuarios WHERE correo = ? AND contrasena = ?";
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, correo);
-            ps.setString(2, contrasena);
-            ResultSet rs = ps.executeQuery();
+        //  Sanitización simple 
+        correo = correo.trim().replaceAll("[<>\"']", "");
+        contrasena = contrasena.trim();
 
-            if (rs.next()) {
-                Usuario usuario = new Usuario(
-                    rs.getInt("id"),
-                    rs.getString("nombre"),
-                    rs.getString("correo"),
-                    rs.getString("contrasena")
-                );
+        try (Connection con = ConexionBD.obtenerConexion()) {
 
-                request.getSession().setAttribute("usuario", usuario);
-                request.getSession().setAttribute("usuarioId", usuario.getId()); 
-                response.sendRedirect("perfil.jsp");
-                
-            } else {
-                response.sendRedirect("login.jsp?error=1");
+            if (con == null) {
+                response.sendRedirect("login.jsp?error=conexion");
+                return;
             }
 
-            rs.close();
-            ps.close();
-            con.close();
+            String sql = "SELECT * FROM usuarios WHERE correo = ?";
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setString(1, correo);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        String storedHash = rs.getString("contrasena");
 
+                        if (BCrypt.checkpw(contrasena, storedHash)) {
+                            Usuario usuario = new Usuario(
+                                rs.getInt("id"),
+                                rs.getString("nombre"),
+                                correo,
+                                null
+                            );
+                            HttpSession session = request.getSession(true);
+                            session.setAttribute("usuario", usuario);
+                            session.setAttribute("usuarioId", usuario.getId());
+
+                            response.sendRedirect("perfil.jsp");
+                        } else {
+                            response.sendRedirect("login.jsp?error=credenciales");
+                        }
+                    } else {
+                        response.sendRedirect("login.jsp?error=usuario_no_encontrado");
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.sendRedirect("login.jsp?error=sql");
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("login.jsp?error=2");
+            response.sendRedirect("login.jsp?error=general");
         }
     }
 }

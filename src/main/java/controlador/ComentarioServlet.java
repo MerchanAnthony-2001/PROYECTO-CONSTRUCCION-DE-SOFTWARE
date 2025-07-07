@@ -6,36 +6,51 @@ package controlador;
 
 import config.ConexionBD;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import jakarta.servlet.http.*;
+import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-/**
- *
- * @author CodeAngel369
- */
 @WebServlet("/ComentarioServlet")
 public class ComentarioServlet extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int recetaId = Integer.parseInt(request.getParameter("receta_id"));
-        int usuarioId = (int) request.getSession().getAttribute("usuarioId");
-        String comentario = request.getParameter("comentario");
 
-        try (Connection con = ConexionBD.obtenerConexion()) {
-            String sql = "INSERT INTO comentarios (receta_id, usuario_id, comentario) VALUES (?, ?, ?)";
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, recetaId);
-            ps.setInt(2, usuarioId);
-            ps.setString(3, comentario);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
+    private static final Logger logger = Logger.getLogger(ComentarioServlet.class.getName());
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+
+        try {
+            // Validar sesión
+            HttpSession session = request.getSession(false);
+            if (session == null || session.getAttribute("usuarioId") == null) {
+                response.sendRedirect("login.jsp?error=debes_iniciar_sesion");
+                return;
+            }
+
+            int recetaId = Integer.parseInt(request.getParameter("receta_id"));
+            int usuarioId = (int) session.getAttribute("usuarioId");
+            String comentario = request.getParameter("comentario");
+
+            // Insertar comentario en la BD
+            String sql = "INSERT INTO comentarios (receta_id, usuario_id, comentario, fecha) VALUES (?, ?, ?, NOW())";
+
+            try (
+                Connection con = ConexionBD.obtenerConexion();
+                PreparedStatement ps = con.prepareStatement(sql)
+            ) {
+                ps.setInt(1, recetaId);
+                ps.setInt(2, usuarioId);
+                ps.setString(3, comentario);
+                ps.executeUpdate();
+            }
+
+        } catch (SQLException | NumberFormatException e) {
+            logger.log(Level.SEVERE, "Error al insertar comentario", e);
         }
+
         response.sendRedirect("VerRecetasServlet");
     }
 }

@@ -1,58 +1,58 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controlador;
 
+import org.mindrot.jbcrypt.BCrypt;
+import org.apache.commons.text.StringEscapeUtils;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
+import jakarta.servlet.http.*;
+import java.sql.*;
 
-/**
- *
- * @author CodeAngel369
- */
 @WebServlet(name = "RegistroServlet", urlPatterns = {"/RegistroServlet"})
 public class RegistroServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
 
-        String nombre = request.getParameter("nombre");
-        String correo = request.getParameter("correo");
+        // Sanitización
+        String nombre = StringEscapeUtils.escapeHtml4(request.getParameter("nombre"));
+        String correo = StringEscapeUtils.escapeHtml4(request.getParameter("correo"));
         String contrasena = request.getParameter("contrasena");
 
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/apprecetas", "root", ""); // cambia usuario y clave si es necesario
+        // Validación
+        if (nombre == null || nombre.isBlank() ||
+            correo == null || correo.isBlank() ||
+            contrasena == null || contrasena.isBlank()) {
+            response.sendRedirect("register.jsp?error=campos_vacios");
+            return;
+        }
 
-            String sql = "INSERT INTO usuarios (nombre, correo, contrasena) VALUES (?, ?, ?)";
-            PreparedStatement ps = con.prepareStatement(sql);
+        // Hash de la contraseña
+        String contrasenaHash = BCrypt.hashpw(contrasena, BCrypt.gensalt(12));
+
+        // try-with-resources
+        try (
+            Connection con = config.ConexionBD.obtenerConexion();
+            PreparedStatement ps = con.prepareStatement(
+                "INSERT INTO usuarios (nombre, correo, contrasena) VALUES (?, ?, ?)")
+        ) {
             ps.setString(1, nombre);
             ps.setString(2, correo);
-            ps.setString(3, contrasena);
+            ps.setString(3, contrasenaHash); 
 
             int filas = ps.executeUpdate();
-            ps.close();
-            con.close();
 
             if (filas > 0) {
                 response.sendRedirect("login.jsp");
             } else {
-                response.sendRedirect("register.jsp?error=1");
+                response.sendRedirect("register.jsp?error=insert_fallido");
             }
 
+        } catch (SQLIntegrityConstraintViolationException e) {
+            response.sendRedirect("register.jsp?error=correo_duplicado");
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("register.jsp?error=2");
+            response.sendRedirect("register.jsp?error=servidor");
         }
     }
 }

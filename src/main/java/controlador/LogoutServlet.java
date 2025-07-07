@@ -24,12 +24,16 @@ public class LogoutServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Cierra la sesión
-        HttpSession sesion = request.getSession(false);
-        if (sesion != null) {
-            sesion.invalidate();
+        try {
+            HttpSession sesion = request.getSession(false);
+            if (sesion != null) {
+                sesion.invalidate();
+            }
+        } catch (IllegalStateException e) {
+            System.err.println("⚠️ Error al invalidar sesión: " + e.getMessage());
+        } finally {
+            response.sendRedirect("index.jsp");
         }
-        // Redirige al inicio o login
-        response.sendRedirect("index.jsp");
     }
 }
+

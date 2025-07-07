@@ -32,6 +32,32 @@
         </form>
 
         <p>¿Ya tienes una cuenta? <a href="login.jsp">Inicia sesión aquí</a>.</p>
+        
+        <%
+    String error = request.getParameter("error");
+    if ("campos_vacios".equals(error)) {
+%>
+    <p style="color:red;">️ Completa todos los campos.</p>
+<%
+    } else if ("correo_duplicado".equals(error)) {
+%>
+    <p style="color:red;"> Este correo ya está registrado.</p>
+<%
+    } else if ("conexion_bd".equals(error)) {
+%>
+    <p style="color:red;"> Error de conexión a la base de datos.</p>
+<%
+    } else if ("insert_fallido".equals(error)) {
+%>
+    <p style="color:red;">️ No se pudo registrar el usuario.</p>
+<%
+    } else if ("servidor".equals(error)) {
+%>
+    <p style="color:red;"> Error interno del servidor.</p>
+<%
+    }
+%>
+
     </main>
 
     <footer>

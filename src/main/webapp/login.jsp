@@ -38,15 +38,35 @@
 
         <p>¿No tienes cuenta? <a href="register.jsp">Regístrate aquí</a>.</p>
 
-        <%-- Mensaje de error si login falla --%>
-        <%
-            String error = request.getParameter("error");
-            if ("1".equals(error)) {
-        %>
-            <p style="color:red;">Correo o contraseña incorrectos.</p>
-        <%
-            }
-        %>
+       <%
+    String error = request.getParameter("error");
+    if ("campos_vacios".equals(error)) {
+%>
+    <p style="color:red;">⚠️ Completa todos los campos.</p>
+<%
+    } else if ("credenciales".equals(error)) {
+%>
+    <p style="color:red;">❌ Contraseña incorrecta.</p>
+<%
+    } else if ("usuario_no_encontrado".equals(error)) {
+%>
+    <p style="color:red;">⚠️ Usuario no registrado.</p>
+<%
+    } else if ("conexion".equals(error)) {
+%>
+    <p style="color:red;">🔌 Error de conexión con la base de datos.</p>
+<%
+    } else if ("sql".equals(error)) {
+%>
+    <p style="color:red;">❌ Error interno en la base de datos.</p>
+<%
+    } else if ("general".equals(error)) {
+%>
+    <p style="color:red;">⚠️ Error inesperado. Intenta más tarde.</p>
+<%
+    }
+%>
+
     </main>
 
     <footer>

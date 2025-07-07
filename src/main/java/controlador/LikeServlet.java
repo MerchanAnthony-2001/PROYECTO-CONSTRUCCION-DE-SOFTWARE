@@ -4,61 +4,65 @@
  */
 package controlador;
 
+import config.ConexionBD;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+
 import java.io.IOException;
 import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @WebServlet("/LikeServlet")
 public class LikeServlet extends HttpServlet {
+
+    private static final Logger logger = Logger.getLogger(LikeServlet.class.getName());
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
-        
 
-        // Validar si hay usuario en sesión
         if (session == null || session.getAttribute("usuarioId") == null) {
             response.sendRedirect("login.jsp?error=debes_iniciar_sesion");
             return;
         }
-        
-
-        int usuarioId = (Integer) session.getAttribute("usuarioId");
-        int recetaId = Integer.parseInt(request.getParameter("receta_id"));
-
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/apprecetas", "root", "");
+            int usuarioId = (int) session.getAttribute("usuarioId");
+            int recetaId = Integer.parseInt(request.getParameter("receta_id"));
 
-            // Evitar duplicados (solo un me encanta por usuario por receta)
-            PreparedStatement check = con.prepareStatement(
-                "SELECT * FROM likes WHERE usuario_id = ? AND receta_id = ?");
-            check.setInt(1, usuarioId);
-            check.setInt(2, recetaId);
-            ResultSet rs = check.executeQuery();
+            String checkSQL = "SELECT 1 FROM likes WHERE usuario_id = ? AND receta_id = ?";
+            String insertSQL = "INSERT INTO likes (usuario_id, receta_id) VALUES (?, ?)";
 
-            if (!rs.next()) {
-                PreparedStatement ps = con.prepareStatement(
-                    "INSERT INTO likes (usuario_id, receta_id) VALUES (?, ?)");
-                ps.setInt(1, usuarioId);
-                ps.setInt(2, recetaId);
-                ps.executeUpdate();
-                ps.close();
+            try (
+                Connection con = ConexionBD.obtenerConexion();
+                PreparedStatement checkStmt = con.prepareStatement(checkSQL)
+            ) {
+                checkStmt.setInt(1, usuarioId);
+                checkStmt.setInt(2, recetaId);
+
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (!rs.next()) {
+                        try (PreparedStatement insertStmt = con.prepareStatement(insertSQL)) {
+                            insertStmt.setInt(1, usuarioId);
+                            insertStmt.setInt(2, recetaId);
+                            insertStmt.executeUpdate();
+                        }
+                    }
+                }
             }
-
-            rs.close();
-            check.close();
-            con.close();
 
             response.sendRedirect("VerRecetasServlet");
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.sendRedirect("recetas.jsp?error=like");
+        } catch (NumberFormatException e) {
+            logger.log(Level.WARNING, "ID de receta inválido: " + request.getParameter("receta_id"), e);
+            response.sendRedirect("recetas.jsp?error=parametros_invalidos");
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error en la base de datos al registrar like", e);
+            response.sendRedirect("recetas.jsp?error=db_like");
         }
     }
 }
